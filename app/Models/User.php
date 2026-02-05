@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Models;
+
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable
+{
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, Notifiable, HasApiTokens;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'f_name',
+        'email',
+        'password',
+        'fcm_token',
+
+        'age',
+        'gender',
+        'nationality',
+        'profession',
+        'company',
+        'dubai_location',
+        'height',
+        'education_level',
+        'family',
+
+        'lifestyle_preference',
+        'your_interest',
+        'languages',
+
+        'bio',
+        'linkedin_profile',
+        'emirate_id',
+    ];
+
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+    public function communities()
+    {
+        return $this->belongsToMany(Community::class, 'community_members')
+            ->withTimestamps()
+            ->withPivot('joined_at');
+    }
+
+    public function createdCommunities()
+    {
+        return $this->hasMany(Community::class, 'creator_id');
+    }
+    public function matchmakerProfile()
+    {
+        return $this->hasOne(MatchmakerProfiles::class);
+    }
+
+    public function createdEvents()
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    public function joinedEvents()
+    {
+        return $this->hasMany(EventAttendee::class);
+    }
+}
