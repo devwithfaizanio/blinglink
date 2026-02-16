@@ -5,6 +5,7 @@ use App\Http\Controllers\api\v1\auth\ForgotPasswordController;
 use App\Http\Controllers\api\v1\auth\UserController;
 use App\Http\Controllers\api\v1\CommunityController;
 use App\Http\Controllers\api\v1\CommunityMessageController;
+use App\Http\Controllers\api\v1\ConnectionController;
 use App\Http\Controllers\api\v1\EventController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,10 @@ Route::post('/login', [UserController::class, 'login']);
 
 
 Route::group(['middleware' => ['auth:sanctum']], function(){
+    //profile
+    Route::get('/profile', [UserController::class, 'getProfile']);
+
+
     Route::post('/switch-role', [UserController::class, 'switchRole']);
     Route::post('logout', [UserController::class, 'Logout']);
     Route::get('/users', [UserController::class, 'getUserList']);
@@ -29,6 +34,7 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
     Route::get('/user/status-by-role', [UserController::class, 'getUserStatusByRole']);
     //store matchmaker profile
     Route::post('/matchmaker/profile', [UserController::class, 'storeMatchmakerProfile']);
+    Route::post('/mentor/profile', [UserController::class, 'storeMentorProfile']);
 
 
     // Community routes
@@ -62,6 +68,14 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
 
 
 
+
+//    Route::prefix('connections')->group(function() {
+//        Route::get('/', [ConnectionController::class, 'myConnections']);
+//        Route::post('/send', [ConnectionController::class, 'send']);
+//        Route::post('/accept', [ConnectionController::class, 'accept']);
+//        Route::post('/reject', [ConnectionController::class, 'reject']);
+//        Route::post('/cancel', [ConnectionController::class, 'cancel']);
+//    });
 
 });
 

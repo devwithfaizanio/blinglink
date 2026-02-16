@@ -35,7 +35,7 @@ class RegisterRequest extends FormRequest
 
 
             'linkedin_profile' => 'required|url',
-            'emirate_id' => 'required|string',
+            'emirate_id' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 
@@ -81,6 +81,9 @@ class RegisterRequest extends FormRequest
             'linkedin_profile.url' => 'LinkedIn profile must be a valid URL',
 
             'emirate_id.required' => 'Emirate ID is required',
+            'emirate_id.image' => 'Emirate ID must be an image',
+            'emirate_id.mimes' => 'Emirate ID must be a file of type: jpeg, png, jpg, gif',
+            'emirate_id.max' => 'Emirate ID must not be greater than 2048 kilobytes',
         ];
     }
 

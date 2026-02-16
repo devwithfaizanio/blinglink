@@ -51,6 +51,7 @@ class EventController extends Controller
         $event->venue = $request->venue;
         $event->event_type = $request->event_type;
         $event->ticket_price = $request->ticket_price;
+        $event->max_attendees = $request->max_attendees;
         $event->status = 'active';
 
         // Handle image upload
@@ -91,6 +92,7 @@ class EventController extends Controller
         $event->event_type = $request->event_type ?? $event->event_type;
         $event->ticket_price = $request->ticket_price ?? $event->ticket_price;
         $event->status = $request->status ?? $event->status;
+        $event->max_attendees = $request->max_attendees ?? $event->max_attendees;
 
         // Handle image upload
         if ($request->hasFile('event_image')) {
@@ -125,6 +127,13 @@ class EventController extends Controller
         //not found
         if (!$event) {
             return $this->notFound(message: 'Event not found');
+        }
+
+        //max attendees check
+        $joinedCount = $event->attendees()->where('status', 'going')->count();
+        if ($joinedCount >= (int) $event->max_attendees) {
+            $maxAttendees = (int) $event->max_attendees;
+            return $this->forbidden(message: "Event is full. $joinedCount out of $maxAttendees attendees have joined.");
         }
 
         if ($event->status === 'cancelled') {

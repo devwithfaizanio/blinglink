@@ -7,10 +7,13 @@ use App\Http\Requests\api\v1\auth\CheckUserAvailabilityRequest;
 use App\Http\Requests\api\v1\auth\getUsersRequest;
 use App\Http\Requests\api\v1\auth\LoginRequest;
 use App\Http\Requests\api\v1\auth\matchMakerProfileRequest;
+use App\Http\Requests\api\v1\auth\mentorProfileRequest;
 use App\Http\Requests\api\v1\auth\RegisterRequest;
 use App\Http\Requests\api\v1\auth\switchRoleRequest;
+use App\Http\Resources\api\v1\auth\profileResource;
 use App\Http\Resources\api\v1\auth\UserListResource;
 use App\Models\MatchmakerProfiles;
+use App\Models\MentorProfile;
 use App\Models\User;
 use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
@@ -41,6 +44,10 @@ class UserController extends Controller
                 'trim',
                 explode(',', $request->your_interest)
             );
+
+            if ($request->hasFile('emirate_id')) {
+                $emirateId = ImageService::addImage('images/user/emirate_id', $request->file('emirate_id'), 'emirate_');
+            }
             // Create User
             $user = User::create([
                 'f_name' => $request->f_name,
@@ -65,7 +72,8 @@ class UserController extends Controller
 
                 'bio' => $request->bio,
                 'linkedin_profile' => $request->linkedin_profile,
-                'emirate_id' => $request->emirate_id,
+                'emirate_id' => $emirateId,
+                'is_approved' => false,
             ]);
 
             return $this->forbidden(
@@ -124,11 +132,16 @@ class UserController extends Controller
             $authUser = auth()->user();
             $user = User::query()->where('id', $authUser->id)->first();
             if (!$user) {
-                return $this->error(message: 'User not found', code: 404);
+                return $this->notFound(message: 'User not found');
             }
             $user->role = $request->role;
             if($request->role == 'matchmaker'){
                 MatchmakerProfiles::firstOrCreate(
+                    ['user_id' => $user->id],
+                );
+            }
+            if($request->role == 'mentor'){
+                MentorProfile::firstOrCreate(
                     ['user_id' => $user->id],
                 );
             }
@@ -182,10 +195,16 @@ class UserController extends Controller
             $data = [
                 'role' => $user->role,
                 'is_approved' => (bool) $user->is_approved,
+                'hasMatchmakerProfile' => $user->matchmakerProfile ? true : false,
+                'hasMentorProfile' => $user->mentorProfile ? true : false,
             ];
 
             if ($user->role === 'matchmaker') {
                 $data['matchmakerApprovalStatusByAdmin'] = (bool) MatchmakerProfiles::where('user_id', $user->id)
+                    ->value('is_approved');
+            }
+            if ($user->role === 'mentor') {
+                $data['mentorApprovalStatusByAdmin'] = (bool) MentorProfile::where('user_id', $user->id)
                     ->value('is_approved');
             }
 
@@ -207,7 +226,7 @@ class UserController extends Controller
 
             $matchMakerProfile = MatchmakerProfiles::query()->where('user_id', $authUser->id)->first();
             if (!$matchMakerProfile) {
-                return $this->notFound(message: 'not found', code: 404);
+                return $this->notFound(message: 'not found');
             }
 
             if($matchMakerProfile->id_document == null){
@@ -240,9 +259,9 @@ class UserController extends Controller
             $matchMakerProfile->coverage_area = json_encode($coverageArea); // array (json)
             $matchMakerProfile->success_story = $request->success_story;
             $matchMakerProfile->total_matches = $request->total_matches;
-            $matchMakerProfile->id_document = $documentPath;
+            $matchMakerProfile->id_document = $documentPath ?? $matchMakerProfile->id_document;
             $matchMakerProfile->is_verified = false;
-            $matchMakerProfile->is_approved = false;
+            $matchMakerProfile->is_approved = true;
             $matchMakerProfile->save();
 
             return $this->success(message: 'success');
@@ -250,5 +269,45 @@ class UserController extends Controller
     catch (\Throwable $th) {}
             return $this->error(message: $th->getMessage(), code: (int)$th->getCode());
     }
+    //getProfile
+    public function getProfile(Request $request)
+    {
+        try {
+            $authUser = auth()->user();
+            $user = User::query()->where('id', $authUser->id)->first();
+            if (!$user) {
+                return $this->error(message: 'User not found', code: 404);
+            }
 
+            return $this->success(
+                message: 'User profile fetched successfully',
+                data: [
+                    'user' => new profileResource($user),
+                ]
+            );
+        } catch (\Throwable $th) {
+            return $this->error(message: $th->getMessage(), code: (int)$th->getCode());
+        }
+    }
+
+    //storeMentorProfile
+        public function storeMentorProfile(mentorProfileRequest $request)
+        {
+            try {
+                $authUser = auth()->user();
+
+                $mentorProfile = MentorProfile::query()->where('user_id', $authUser->id)->first();
+                if (!$mentorProfile) {
+                    return $this->notFound(message: 'not found', code: 404);
+                }
+                $mentorProfile->phone = $request->phone;
+                $mentorProfile->price = $request->price ?? $mentorProfile->price;
+                $mentorProfile->is_approved = true; // Set approval status as needed
+                $mentorProfile->save();
+
+                return $this->success(message: 'Mentor profile updated successfully');
+            } catch (\Throwable $th) {
+                return $this->error(message: $th->getMessage(), code: (int)$th->getCode());
+            }
+        }
 }

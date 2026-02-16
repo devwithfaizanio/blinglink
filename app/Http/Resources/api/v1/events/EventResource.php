@@ -23,12 +23,16 @@ class EventResource extends JsonResource
             'venue' => $this->venue,
             'event_type' => $this->event_type,
             'ticket_price' => $this->ticket_price,
+            'max_attendees' => (int) $this->max_attendees,
             'status' => $this->status,
             'event_image' => $this->event_image,
             'isMine' => $this->user_id === auth()->id(),
             'created_at' => $this->created_at,
             'joined_count' => $this->attendees()->where('status', 'going')->count(),
             'cancelled_count' => $this->attendees()->where('status', 'cancelled')->count(),
+            'joined' => $this->attendees()->where('user_id', auth()->id())->where('status', 'going')->exists(),
+            'cancelled' => $this->attendees()->where('user_id', auth()->id())->where('status', 'cancelled')->exists(),
+            'joinButtonDisabled' => $this->attendees()->where('status', 'going')->count() < (int) $this->max_attendees ? false : true,
         ];
     }
 }

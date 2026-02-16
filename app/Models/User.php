@@ -67,6 +67,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function getEmirateIdAttribute($image): ?string
+    {
+        return $image ? asset('images/user/emirate_id/'.$image) : null;
+    }
+
     public function communities()
     {
         return $this->belongsToMany(Community::class, 'community_members')
@@ -82,6 +87,11 @@ class User extends Authenticatable
     {
         return $this->hasOne(MatchmakerProfiles::class);
     }
+    public function mentorProfile()
+    {
+        return $this->hasOne(MentorProfile::class);
+    }
+
 
     public function createdEvents()
     {
@@ -92,4 +102,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(EventAttendee::class);
     }
+
+    public function sentConnections()
+    {
+        return $this->hasMany(Connection::class, 'requester_id');
+    }
+
+    public function receivedConnections()
+    {
+        return $this->hasMany(Connection::class, 'requested_id');
+    }
+
 }

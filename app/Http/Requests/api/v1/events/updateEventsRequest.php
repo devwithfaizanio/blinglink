@@ -25,10 +25,15 @@ class updateEventsRequest extends FormRequest
             'event_type' => 'nullable|string|max:255',
 
             'ticket_price' => 'nullable|numeric|min:0',
+            'max_attendees' => 'nullable|numeric|min:0',
+
 
             'event_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
             'status' => 'nullable|string|in:active,cancelled,completed',
+
+
+
         ];
     }
 
@@ -42,6 +47,8 @@ class updateEventsRequest extends FormRequest
 
             'ticket_price.numeric' => 'Ticket price must be a number.',
             'ticket_price.min' => 'Ticket price cannot be negative.',
+            'max_attendees.numeric' => 'Max attendees must be a number.',
+            'max_attendees.min' => 'Max attendees cannot be negative.',
 
             'event_image.image' => 'Event image must be a valid image file.',
             'event_image.mimes' => 'Event image must be a file of type: jpeg, png, jpg, gif.',

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('venue')->nullable();
             $table->string('event_type')->nullable();
+            $table->string('max_attendees')->nullable();
             $table->decimal('ticket_price', 10, 2)->default(0);
             $table->string('event_image')->nullable();
             $table->enum('status', ['active', 'cancelled','completed'])->default('active');

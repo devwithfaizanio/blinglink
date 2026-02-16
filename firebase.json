@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "blinglink-ai",
+  "private_key_id": "e5c52b84447406391ee9bbea176b1d51d3e3195c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDh86DPouHSBnRu\nsnNI8RIKRLALphPi6FNFde1EK0u5+Rf9H5KGVGmOQOb4kXXZRlINAFEUMXPLPBAa\nlRhAYwrToTl0XVjPuX3sbcGJxUSk8EwxMH3Xw2rUYSszhhJU3bDqlBMSRSS2WeTE\nATb9qpfbRY+X4W1KABsMgp6LIkeqx3psXCNyqF0D6T8+Vnr595nXh2vcruY5eJ3R\nCTCf65Y8a+8VKruE+DrYHUTemboHOd/qryEHlK687VjVGAxym3QgrlO96xjmaWvA\n1i3kJk2mtYBJwKjIz0Cg50jgvRONX60ScWvK6ga1W5qLwnXw2NUAwT125Tg74bGC\nubcgSwT1AgMBAAECggEAGm01JLPHN5o7qerDIwfW9U59TI97CfHkM16MhomNzM1+\nacN0jrN2uQWMPgw9PVFFLXIZCYSTJ3T56TIA6R7sWD4mCx8T0Q+/05Quq59f3O6h\n6qriPQcFCpvmwprur/BRzc3NwThHB/DRmb8OoHKAWkvzdG8QKjSC9V6djmZO/YEo\n5R6GVpZ2st7QtIjzyFdROnRY8Hyw7Fr1DwSx413LzMV1AHgdxJkUTLyWR20NKkpk\nCGu/9DUIHkB6wkMlHwGqMP4mZhSfhBuMMXOC9pYy6Sf/PLbqTkgb044WFrTim+uT\nEncWtoUhIjkzSGjPb2G62BCNnx4ASC/dH9FnU6C7QQKBgQDwx4/ITXYqNQeG/w/M\nJCVLRvAWk5Ig0Y1zL1yaNT7EEik05JDgnLtB2XM+gdm1J7BRNu0m9twE1LX9t/xy\nUY/PoWB3VewklAOawbU43LZOoWRVT990UUA7iJTxul27ZC3nEPmj5FL5m7/837tG\nrsQaVG316sDUx3/qBEDpb/+gUQKBgQDwPBz3AzyCUadAxNCkTg2SAQ7rlaya41SO\n/rsV7iz/xMD7QLH2AMIApjH03Gv378AesI8ID42JCI86KG7iod7y3Ju7vBe/5SYd\ng0NpHoKuyRo/W92yij9+ix2MmDIUKv3n3tySYDueEkhNj9YpI8hwd+jh04+VpXkU\nwWsa8EA1ZQKBgBDjnqVJMbGyOI3ylDQYkPkfx7V9snFU4ZwjxVYXyAhO0c8g/TyU\nIdpzm07WIuQ/HXIE7UufYz1/giiC4FVQfUruIesc/sxuCXawgbq0WKFZVsVZLe5l\nyKCkavYtwWdkloevvCMP3/YcQ7JEK0nA9oZ2R6RJTC9gswtCMx9suLyRAoGBAMUq\n0Sr6gQMEOR0za3ouhXy7WZ+I7G0C/zeNYccR/+S7exe7dVPOM2uM+5tX/VU0dJ27\nkuiuux8o40R8QuXGrNDutvJR4bwhOjMmtIDmBaOmceBmaYJLbOlTDCGEGDXtQw63\nHpkUWlnV73mY/9AsCiokgAI4PLQ5ZzLdvCYT4N7xAoGAXsXZUwzMwmgJt62dKvOm\nxbvcTT32V4YRd6DHTpLyXmQ4LqFNzqikjGoi+E0hRK6ttyxdb98Hz6KCTUHccg3U\nr2Fs0dIq6WyAyIYELry1SY6WWnB2Y2F8KbiNwdHCC+iRpOAYUI+Ghap7I/uqZeQr\nSrp+AulWRQsZleGg2JNcyHw=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@blinglink-ai.iam.gserviceaccount.com",
+  "client_id": "109267032628721750170",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40blinglink-ai.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
