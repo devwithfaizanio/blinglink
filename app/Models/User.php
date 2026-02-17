@@ -64,6 +64,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'lifestyle_preference' => 'array',
+            'your_interest' => 'array',
         ];
     }
 

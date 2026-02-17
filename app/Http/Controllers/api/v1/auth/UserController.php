@@ -66,8 +66,8 @@ class UserController extends Controller
                 'family' => $request->family,
 
                 // JSON fields
-                'lifestyle_preference' => json_encode($lifestylePreference),
-                'your_interest' => json_encode($yourInterest),
+                'lifestyle_preference' => $lifestylePreference,
+                'your_interest' => $yourInterest,
 
 
                 'bio' => $request->bio,

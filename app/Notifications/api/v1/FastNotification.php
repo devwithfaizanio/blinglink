@@ -1,13 +1,10 @@
 <?php
 
-namespace App\Notifications\v1;
+namespace App\Notifications\api\v1;
 
 use App\Models\Announcement;
-use App\Models\User;
-use App\Notifications\v1\FirebaseChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class FastNotification extends Notification implements ShouldQueue

@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Http\Controllers\api\v1\auth\ForgotPasswordController;
 use App\Http\Controllers\api\v1\auth\UserController;
 use App\Http\Controllers\api\v1\CommunityController;
@@ -18,6 +17,12 @@ use Illuminate\Support\Facades\Route;
 Route::post('/check-user-availability', [UserController::class, 'CheckUserAvailability']);
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
+
+//Route::prefix('forgot_password')->group(function() {
+//    Route::post('/send_otp', [ForgotPasswordController::class,'sendOtp']);
+//    Route::post('/verify_otp', [ForgotPasswordController::class,'VerifyOtp']);
+//    Route::post('/reset_password', [ForgotPasswordController::class,'ResetPassword']);
+//});
 
 
 
@@ -69,13 +74,14 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
 
 
 
-//    Route::prefix('connections')->group(function() {
-//        Route::get('/', [ConnectionController::class, 'myConnections']);
-//        Route::post('/send', [ConnectionController::class, 'send']);
-//        Route::post('/accept', [ConnectionController::class, 'accept']);
-//        Route::post('/reject', [ConnectionController::class, 'reject']);
-//        Route::post('/cancel', [ConnectionController::class, 'cancel']);
-//    });
+    Route::prefix('connections')->group(function() {
+        Route::get('/suggested', [ConnectionController::class, 'suggestedConnections']);
+        Route::get('/', [ConnectionController::class, 'myConnections']);
+        Route::post('/send', [ConnectionController::class, 'send']);
+        Route::post('/accept', [ConnectionController::class, 'accept']);
+        Route::post('/reject', [ConnectionController::class, 'reject']);
+        Route::post('/cancel', [ConnectionController::class, 'cancel']);
+    });
 
 });
 
