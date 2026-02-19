@@ -41,6 +41,7 @@ class User extends Authenticatable
         'bio',
         'linkedin_profile',
         'emirate_id',
+        'profile_image'
     ];
 
 
@@ -72,6 +73,10 @@ class User extends Authenticatable
     public function getEmirateIdAttribute($image): ?string
     {
         return $image ? asset('images/user/emirate_id/'.$image) : null;
+    }
+    public function getProfileImageAttribute($image): ?string
+    {
+        return $image ? asset('images/user/profile_image/'.$image) : asset('default_images/profile.png');
     }
 
     public function communities()
@@ -114,5 +119,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(Connection::class, 'requested_id');
     }
+    //alreadyPendingRequest function to check if there is already a pending connection request between the authenticated user and another user
+    public function alreadyPendingRequest($otherUserId)
+    {        $pendingRequest = Connection::where(function ($query) use ($otherUserId) {
+            $query->where('requester_id', auth()->id())
+                ->where('requested_id', $otherUserId);
+        })->orWhere(function ($query) use ($otherUserId) {
+            $query->where('requester_id', $otherUserId)
+                ->where('requested_id', auth()->id());
+        })->where('status', 'pending')->first();
+        return $pendingRequest;
+    }
+
 
 }

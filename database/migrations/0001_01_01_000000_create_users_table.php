@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('role', ['admin', 'user','matchmaker','mentor'])->default('user');
 
             $table->integer('age')->nullable();
+            $table->string('profile_image')->nullable();
             $table->string('gender')->nullable();
             $table->string('nationality')->nullable();
             $table->string('profession')->nullable();

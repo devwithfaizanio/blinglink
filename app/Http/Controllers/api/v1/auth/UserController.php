@@ -48,13 +48,16 @@ class UserController extends Controller
             if ($request->hasFile('emirate_id')) {
                 $emirateId = ImageService::addImage('images/user/emirate_id', $request->file('emirate_id'), 'emirate_');
             }
+            if ($request->hasFile('profile_image')) {
+                $profileImage = ImageService::addImage('images/user/profile_image', $request->file('profile_image'), 'profile_image_');
+            }
             // Create User
             $user = User::create([
                 'f_name' => $request->f_name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
                 'fcm_token' => $request->fcm_token,
-
+                'profile_image' => $profileImage,
                 'age' => $request->age,
                 'gender' => $request->gender,
                 'nationality' => $request->nationality,

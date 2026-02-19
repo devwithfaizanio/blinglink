@@ -20,6 +20,7 @@ class profileResource extends JsonResource
             'email' => $this->email,
             'role' => $this->role,
             'age' => $this->age,
+            'profile_image' => $this->profile_image,
             'gender' => $this->gender,
             'nationality' => $this->nationality,
             'profession' => $this->profession,

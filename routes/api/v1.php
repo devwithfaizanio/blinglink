@@ -18,11 +18,11 @@ Route::post('/check-user-availability', [UserController::class, 'CheckUserAvaila
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
-//Route::prefix('forgot_password')->group(function() {
-//    Route::post('/send_otp', [ForgotPasswordController::class,'sendOtp']);
-//    Route::post('/verify_otp', [ForgotPasswordController::class,'VerifyOtp']);
-//    Route::post('/reset_password', [ForgotPasswordController::class,'ResetPassword']);
-//});
+Route::prefix('forgot_password')->group(function() {
+    Route::post('/send_otp', [ForgotPasswordController::class,'sendOtp']);
+    Route::post('/verify_otp', [ForgotPasswordController::class,'VerifyOtp']);
+    Route::post('/reset_password', [ForgotPasswordController::class,'ResetPassword']);
+});
 
 
 

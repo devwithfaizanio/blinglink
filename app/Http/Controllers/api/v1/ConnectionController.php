@@ -7,6 +7,7 @@ use App\Http\Requests\api\v1\connections\acceptConnectionRequest;
 use App\Http\Requests\api\v1\connections\sendConnectionRequest;
 use App\Http\Resources\api\v1\auth\UserListResource;
 use App\Http\Resources\api\v1\connections\connectionResource;
+use App\Http\Resources\api\v1\connections\connectionSuggestionResource;
 use App\Models\Connection;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -199,6 +200,7 @@ class ConnectionController extends Controller
                 'your_interest',
                 'languages',
                 'linkedin_profile',
+                'profile_image'
             ])
 
             ->selectRaw("
@@ -233,7 +235,7 @@ class ConnectionController extends Controller
 
         return $this->success(message: 'successfully', data: [
             'pending_requests' => connectionResource::collection($pendingConnections),
-            'users' => UserListResource::collection($users),
+            'users' => connectionSuggestionResource::collection($users),
             'pagination' => $paginationInfo,
         ]);
     }
@@ -342,6 +344,26 @@ class ConnectionController extends Controller
 
         return $this->success(message: 'Connection rejected successfully');
     }
+    //cancel mean delete the request if it's pending or delete the connection if it's accepted
+    public function cancel(acceptConnectionRequest $request)
+    {
+        $user = auth()->user();
+
+        $connection = Connection::where('id', $request->connection_id)->where('status', 'pending')
+            ->where(function ($q) use ($user) {
+                $q->where('requester_id', $user->id)
+                    ->orWhere('requested_id', $user->id);
+            })
+            ->first();
+        if (!$connection) {
+            return $this->forbidden(message: 'You cannot cancel this connection request. you are not part of this connection.');
+        }
+        $connection->delete();
+
+        return $this->success(message: 'Connection cancelled successfully');
+    }
+
+
 
 
 }
