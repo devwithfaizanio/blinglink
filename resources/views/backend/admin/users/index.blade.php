@@ -39,8 +39,9 @@
                         <th class="ltr:text-left rtl:text-right uppercase">#</th>
                         <th class="text-center uppercase">image</th>
                         <th class="text-center uppercase">name</th>
-                        <th class="text-center uppercase">Reminder Notification</th>
-                        <th class="text-center uppercase">Update Notification</th>
+                        <th class="text-center uppercase">role</th>
+                        <th class="text-center uppercase">is verify</th>
+                        <th class="text-center uppercase">verify</th>
                         <th class="uppercase">action</th>
                     </tr>
                     </thead>
@@ -48,42 +49,37 @@
                     @foreach($users as $index => $user)
                         <tr>
                             <td>{{++$index}}</td>
-                            <td class="text-center"><img src="{{$user->image}}" width="50px" height="50px" style="border-radius: 50%" onerror="{{asset('Avatars/2.png')}}"> </td>
-                            <td class="">{{$user->name}} <span class="font-bold">({{$user->username}})</span><br>{{$user->email}}</td>
-                            <td class="">
+                            <td class="text-center"><img src="{{$user->profile_image}}" width="50px" height="50px" style="border-radius: 50%" onerror="{{asset('Avatars/2.png')}}"></td>
+                            <td class="">{{$user->f_name}}<br>{{$user->email}}</td>
+                            <td class=""> <span class="badge badge_primary">{{ ucfirst($user->role) }}</span></td>
+                            <td class="uppercase">
+                                <span class="badge {{ $user->is_approved == 0 ? 'badge_danger' : 'badge_primary' }}">
+                                    {{ $user->is_approved == 0 ? 'Not Verified' : 'Verified' }}
+                                </span>
+                            </td>
+                            <td>
                                 <label class="switch">
                                     <input type="checkbox"
-                                           @if($user->reminder_notification == 1) checked @endif disabled>
+                                           class="verify-toggle"
+                                           data-user-id="{{ $user->id }}"
+                                        {{ $user->is_approved ? 'checked' : '' }}>
                                     <span></span>
                                 </label>
                             </td>
-                            <td class=""><label class="switch">
-                                    <input type="checkbox"
-                                           @if($user->update_notification == 1) checked @endif disabled>
-                                    <span></span>
-                                </label>
-                            </td>
-
 
                             <td class="ltr:text-right rtl:text-left whitespace-nowrap">
                                 <div class="inline-flex ltr:ml-auto rtl:mr-auto">
                                     <span class="ml-2">
-                                        <button class="badge badge_outlined badge_info ltr:mr-2 rtl:ml-2 mt-2" data-toggle="modal" data-target="#exampleModalScrollable{{$user->id}}">Measurement</button>
-                                    </span>
-                                    <span class="ml-2">
-                                        <a href="{{route('admin_recipes.user.diets',$user->id)}}">
-                                            <button class="badge badge_outlined badge_info ltr:mr-2 rtl:ml-2 mt-2">Recipe</button>
-                                        </a>
-                                    </span>
-                                    <span class="ml-2">
-                                        <a href="{{route('admin.users.fasting',$user->id)}}">
-                                            <button class="badge badge_outlined badge_info ltr:mr-2 rtl:ml-2 mt-2">Fasts</button>
-                                        </a>
-                                    </span>
-                                    <span class="ml-2">
-                                        <a href="{{route('admin.users.workHistory',$user->id)}}">
-                                            <button class="badge badge_outlined badge_info ltr:mr-2 rtl:ml-2 mt-2">WorkOuts</button>
-                                        </a>
+                                        <button
+                                            class="btn btn-icon btn_outlined btn_info"
+                                            type="button"
+                                            data-toggle="modal"
+                                            data-target="#exampleModalScrollable{{$user->id}}"
+                                            data-placement="left"
+                                            title="View"
+                                        >
+                                            <span class="la la-eye"></span>
+                                        </button>
                                     </span>
                                     <span class="ml-2">
                                         <button class="btn btn-icon btn_outlined btn_danger" type="button" data-toggle="modal" data-target="#delete{{$user->id}}" data-toggle="tooltip" data-placement="left" title="Delete"><span class="la la-trash-alt"></span></button>
@@ -96,7 +92,7 @@
                             <div class="modal-dialog max-w-2xl">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h2 class="modal-title">Delete Agency</h2>
+                                        <h2 class="modal-title">Delete User</h2>
                                         <button type="button" class="close la la-times" data-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
@@ -117,6 +113,10 @@
                         </div>
 
 
+
+
+
+
                         <!-- Scrollable -->
                         <div id="exampleModalScrollable{{$user->id}}" class="modal" data-animations="fadeInDown, fadeOutUp">
                             <div class="modal-dialog modal-dialog_scrollable max-w-2xl">
@@ -124,7 +124,7 @@
                                     @csrf
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h2 class="modal-title">Today Measurement
+                                            <h2 class="modal-title">User Info
                                             </h2><br>
                                             <button type="button" class="close la la-times" data-dismiss="modal"></button>
                                         </div>
@@ -132,39 +132,100 @@
                                         <div class="modal-body">
                                             <p class="text-transparent">To select a coach which coach train to the trainee for the best practice to achieve our goal.</p>
 
-                                            @foreach($measurements as $measurement)
+                                            <div class="grid grid-cols-2 gap-4 text-sm">
 
-                                                @php
-                                                    $todayMeasurement = null;
-                                                    $logModel = $measurement->measurementLog;
+                                                <div><strong>First Name:</strong> {{ $user->f_name ?? 'N/A' }}</div>
+                                                <div><strong>Email:</strong> {{ $user->email ?? 'N/A' }}</div>
 
-                                                    if ($logModel && $logModel->user_id == $user->id && $logModel->measurement_log) {
-                                                        $logs = json_decode($logModel->measurement_log, true);
-                                                        $today = \Carbon\Carbon::now()->toDateString();
+                                                <div><strong>Role:</strong> {{ ucfirst($user->role) }}</div>
+                                                <div><strong>Age:</strong> {{ $user->age ?? 'N/A' }}</div>
 
-                                                        foreach ($logs as $log) {
-                                                            $logDate = \Carbon\Carbon::parse($log['measurement_at'])->toDateString();
-                                                            if ($logDate === $today) {
-                                                                $todayMeasurement = $log;
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                @endphp
+                                                <div><strong>Gender:</strong> {{ $user->gender ?? 'N/A' }}</div>
+                                                <div><strong>Nationality:</strong> {{ $user->nationality ?? 'N/A' }}</div>
 
-                                                <a href="{{route('admin.users.measurements', [$measurement->id, $user->id])}}" >
-                                                    <div class="px-6 py-3 flex flex-row items-center justify-between bg-gray-100 mb-2">
-                                                        <span class="py-1 text-xs font-bold text-black mr-1 flex flex-row items-center">
-                                                            <span>{{$measurement->name}} ({{$measurement->unit}}) </span>
-                                                        </span>
-                                                            <span  class="py-1 text-xs font-regular text-gray-900 mr-1 flex flex-row items-center">
-                                                            {{ $todayMeasurement ? $todayMeasurement['value'] . ' ' . $measurement->unit : 'No data for today' }}
-                                                        </span>
+                                                <div><strong>Profession:</strong> {{ $user->profession ?? 'N/A' }}</div>
+                                                <div><strong>Company:</strong> {{ $user->company ?? 'N/A' }}</div>
+
+                                                <div><strong>Dubai Location:</strong> {{ $user->dubai_location ?? 'N/A' }}</div>
+                                                <div><strong>Height:</strong> {{ $user->height ?? 'N/A' }}</div>
+
+                                                <div><strong>Education Level:</strong> {{ $user->education_level ?? 'N/A' }}</div>
+                                                <div><strong>Family:</strong> {{ $user->family ?? 'N/A' }}</div>
+
+                                                <div><strong>Languages:</strong> {{ $user->languages ?? 'N/A' }}</div>
+
+                                                <div>
+                                                    <strong>LinkedIn:</strong>
+                                                    @if($user->linkedin_profile)
+                                                        <a href="{{ $user->linkedin_profile }}" target="_blank" class="text-blue-600 underline">
+                                                            View Profile
+                                                        </a>
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </div>
+
+
+
+                                                <div>
+                                                    <strong>Status:</strong>
+                                                    <span class="badge {{ $user->is_approved ? 'badge_success' : 'badge_danger' }}">
+                {{ $user->is_approved ? 'Verified' : 'Not Verified' }}
+            </span>
+                                                </div>
+
+                                            </div>
+
+                                            {{-- Lifestyle Preference --}}
+                                            <div class="mt-4">
+                                                <strong>Lifestyle Preferences:</strong>
+                                                <p class="mt-1">
+                                                    {{ $user->lifestyle_preference_text }}
+                                                </p>
+                                            </div>
+
+                                            {{-- Interests --}}
+                                            <div class="mt-3">
+                                                <strong>Your Interests:</strong>
+                                                <p class="mt-1">
+                                                    {{ $user->interest_text }}
+                                                </p>
+                                            </div>
+
+                                            {{-- Bio --}}
+                                            <div class="mt-3">
+                                                <strong>Bio:</strong>
+                                                <p class="mt-1">{{ $user->bio ?? 'N/A' }}</p>
+                                            </div>
+
+                                            {{-- Images Row --}}
+                                            @if($user->emirate_id || $user->profile_image)
+                                                <div class="mt-4">
+                                                    <strong>Documents:</strong>
+
+                                                    <div class="mt-2 flex items-center gap-6">
+
+                                                        {{-- Emirate ID --}}
+                                                        @if($user->emirate_id)
+                                                            <div class="flex flex-col items-center">
+                                                                <span class="text-xs mb-1">Emirate ID</span>
+                                                                <img src="{{$user->emirate_id }}"
+                                                                     class="w-24 h-24 rounded-lg object-cover border">
+                                                            </div>
+                                                        @endif
+
+                                                        {{-- Profile Image --}}
+                                                        @if($user->profile_image)
+                                                            <div class="flex flex-col items-center">
+                                                                <span class="text-xs mb-1">Profile Image</span>
+                                                                <img src="{{ $user->profile_image }}"
+                                                                     class="w-24 h-24 rounded-lg object-cover border">
+                                                            </div>
+                                                        @endif
+
                                                     </div>
-                                                </a>
-                                            @endforeach
-
-
+                                                </div>
+                                            @endif
 
                                         </div>
                                         <div class="modal-footer">
@@ -189,6 +250,49 @@
         </div>
         @include('backend.layouts.footer')
     </main>
+@endsection
+
+@section('script')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.querySelectorAll('.verify-toggle').forEach(function (checkbox) {
+
+                checkbox.addEventListener('change', function () {
+
+                    let userId = this.dataset.userId;
+                    let isChecked = this.checked;
+
+                    console.log('Toggling user ID:', userId, 'New Status:', isChecked);
+
+                    fetch("{{ route('admin.users.toggle-status') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            user_id: userId
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.success) {
+                                alert('Something went wrong!');
+                                this.checked = !isChecked; // revert toggle
+                            }
+                        })
+                        .catch(error => {
+                            alert('Error updating status');
+                            this.checked = !isChecked; // revert toggle
+                        });
+
+                });
+
+            });
+
+        });
+    </script>
 @endsection
 
 

@@ -23,10 +23,10 @@
                 <div class="card p-5">
                     <h3>Photo</h3>
                     <div class="mt-5 leading-normal">
-                        <span class=" w-32 h-32 rounded-r-lg"><img src="{{auth()->user()->image}}" alt="No image" id="output"></span>
+                        <span class=" w-32 h-32 rounded-r-lg"><img src="{{auth()->user()->profile_image}}" alt="No image" id="output"></span>
                         <hr class="my-2">
                         <p class="flex items-center text-gray-700 dark:text-gray-500 hover:text-primary">
-                        <h3>{{auth()->user()->name}}</h3>
+                        <h3>{{auth()->user()->f_name}}</h3>
                         <h4>{{auth()->user()->email}}</h4>
                         </p>
                     </div>
@@ -43,16 +43,16 @@
                             <div class="">
                                 <div class="mb-5">
                                     <label class="label block mb-2" for="title">Name</label>
-                                    <input id="name" type="text" class="form-control" name="fname" value="{{auth()->user()->fname}}">
+                                    <input id="name" type="text" class="form-control" name="f_name" value="{{auth()->user()->f_name}}">
                                 </div>
                             </div>
                             <!-- Second Column -->
-                            <div class="">
-                                <div class="mb-5">
-                                    <label class="label block mb-2" for="title">Name</label>
-                                    <input id="name" type="text" class="form-control" name="lname" value="{{auth()->user()->lname}}">
-                                </div>
-                            </div>
+{{--                            <div class="">--}}
+{{--                                <div class="mb-5">--}}
+{{--                                    <label class="label block mb-2" for="title">Name</label>--}}
+{{--                                    <input id="name" type="text" class="form-control" name="lname" value="{{auth()->user()->lname}}">--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
                         </div>
 
                         <div class="mb-5 xl:w-1/2 ">

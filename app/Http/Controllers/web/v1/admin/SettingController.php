@@ -4,7 +4,7 @@ namespace App\Http\Controllers\web\v1\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
-use App\Services\v1\ImageService;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 
 class SettingController extends Controller
@@ -139,8 +139,6 @@ class SettingController extends Controller
                     ['value' => $privacyPolicy, 'updated_at' => now()]
                 );
             }
-
-//            return redirect()->back()->with('success', 'update setting ');
 
             $notification = array(
                 'message' => 'Successfully',

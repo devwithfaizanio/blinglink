@@ -9,7 +9,7 @@ function settingKey()
     $twitter = Setting::query()->where('key', 'twitter_link')->first()->value ?? null;
     $instagram = Setting::query()->where('key', 'instagram_link')->first()->value ?? null;
     $linkedin = Setting::query()->where('key', 'linkedin_link')->first()->value ?? null;
-    $appLogo = Setting::query()->where('key', 'app_logo')->first()->value ?? asset('default_images/logo.png');
+    $appLogo = Setting::query()->where('key', 'app_logo')->first()?->value;
     $forgotPasswordTemplate = Setting::query()->where('key', 'forgot_password_template')->first()->value ?? null;
     $forgotPasswordTemplateMail = Setting::query()->where('key', 'forgot_password_mail_template')->first()->value ?? null;
     $accountVerificationTemplateMail = Setting::query()->where('key', 'account_verification_template')->first()->value ?? null;
@@ -22,7 +22,7 @@ function settingKey()
         'twitter_link' => $twitter,
         'instagram_link' => $instagram,
         'linkedin_link' => $linkedin,
-        'app_logo' => $appLogo,
+        'app_logo' => $appLogo ? asset('images/setting/' . $appLogo) : asset('default_images/logo.png'),
         'forgot_password_template' => json_decode($forgotPasswordTemplate, true),
         'forgot_password_mail_template' => json_decode($forgotPasswordTemplateMail, true),
         'account_verification_template' => json_decode($accountVerificationTemplateMail, true),

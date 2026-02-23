@@ -45,7 +45,7 @@ class RegisterRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => 'Name is required',
+            'f_name.required' => 'Name is required',
 
             'email.required' => 'Email is required',
             'email.email' => 'Email is not valid',

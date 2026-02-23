@@ -15,7 +15,7 @@
             </section>
             <!-- Tabs -->
             <div class="lg:flex lg:-mx-4 mt-5">
-                <div class=" lg:px-4">
+                <div class=" lg:px-4 w-full">
                     <div class="card p-5">
                         <h3>App Setting </h3>
                         <input type="hidden" name="active_tab" id="active_tab" value="basic_setting"> <!-- Default tab -->
@@ -36,7 +36,7 @@
                                             <div class="card p-5 ml-2">
                                                 <h3>Logo</h3>
                                                 <div class="mt-5 leading-normal ">
-                                                    <span class=" rounded-r-lg m-10"><img src="{{ asset(settingKey()['app_logo'] ? 'images/setting/' . settingKey()['app_logo'] : asset('logo/secondaryLogo.png')) }}" alt="No image" id="output"></span>
+                                                    <span class=" rounded-r-lg m-10"><img src="{{ asset(settingKey()['app_logo'])}}" alt="No image" id="output"></span>
                                                 </div>
                                             </div>
                                         </div>

@@ -10,6 +10,7 @@ use App\Http\Requests\api\v1\auth\matchMakerProfileRequest;
 use App\Http\Requests\api\v1\auth\mentorProfileRequest;
 use App\Http\Requests\api\v1\auth\RegisterRequest;
 use App\Http\Requests\api\v1\auth\switchRoleRequest;
+use App\Http\Requests\api\v1\auth\updateProfileRequest;
 use App\Http\Resources\api\v1\auth\profileResource;
 use App\Http\Resources\api\v1\auth\UserListResource;
 use App\Models\MatchmakerProfiles;
@@ -313,4 +314,61 @@ class UserController extends Controller
                 return $this->error(message: $th->getMessage(), code: (int)$th->getCode());
             }
         }
+        //updateProfile
+
+    public function updateProfile(updateProfileRequest $request)
+    {
+        try {
+            $authUser = auth()->user();
+
+            if($request->lifestyle_preference){
+                $lifestylePreference = array_map(
+                    'trim',
+                    explode(',', $request->lifestyle_preference)
+                );
+            }
+            if($request->your_interest) {
+                $yourInterest = array_map(
+                    'trim',
+                    explode(',', $request->your_interest)
+                );
+            }
+
+            if ($request->hasFile('emirate_id')) {
+                $emirateId = ImageService::updateImage('images/user/emirate_id', $request->file('emirate_id'),$authUser->emirate_id, 'emirate_');
+            }
+            if ($request->hasFile('profile_image')) {
+                $profileImage = ImageService::updateImage('images/user/profile_image', $request->file('profile_image'), $authUser->profile_image,'profile_image_');
+            }
+
+            $authUser->f_name = $request->f_name ?? $authUser->f_name;
+            $authUser->profile_image = $profileImage ?? $authUser->profile_image;
+            $authUser->age = $request->age ?? $authUser->age;
+            $authUser->gender = $request->gender ?? $authUser->gender;
+            $authUser->nationality = $request->nationality ?? $authUser->nationality;
+            $authUser->profession = $request->profession ?? $authUser->profession;
+            $authUser->company = $request->company ?? $authUser->company;
+            $authUser->dubai_location = $request->dubai_location ?? $authUser->dubai_location;
+            $authUser->height = $request->height ?? $authUser->height;
+            $authUser->education_level = $request->education_level ?? $authUser->education_level;
+            $authUser->family = $request->family ?? $authUser->family;
+            $authUser->lifestyle_preference = $lifestylePreference ?? $authUser->lifestyle_preference;
+            $authUser->your_interest = $yourInterest ?? $authUser->your_interest;
+
+            $authUser->bio = $request->bio ?? $authUser->bio;
+            $authUser->linkedin_profile = $request->linkedin_profile ?? $authUser->linkedin_profile;
+            $authUser->emirate_id = $emirateId ?? $authUser->emirate_id;
+            $authUser->save();
+
+            return $this->success(
+                message: 'User update successfully',
+            );
+
+        } catch (\Throwable $th) {
+            return $this->error(
+                message: $th->getMessage(),
+            );
+        }
+    }
+
 }

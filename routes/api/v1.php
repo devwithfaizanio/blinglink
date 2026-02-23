@@ -30,6 +30,8 @@ Route::prefix('forgot_password')->group(function() {
 Route::group(['middleware' => ['auth:sanctum']], function(){
     //profile
     Route::get('/profile', [UserController::class, 'getProfile']);
+    //update profile
+    Route::post('/update-profile', [UserController::class, 'updateProfile']);
 
 
     Route::post('/switch-role', [UserController::class, 'switchRole']);

@@ -4,6 +4,7 @@ use App\Http\Controllers\web\v1\admin\AuthController;
 use App\Http\Controllers\web\v1\admin\DashboardController;
 use App\Http\Controllers\web\v1\admin\ProfileController;
 use App\Http\Controllers\web\v1\admin\SettingController;
+use App\Http\Controllers\web\v1\admin\UserController;
 use App\Http\Controllers\web\v1\CkeditorController;
 use App\Http\Controllers\web\v1\ForgotPasswordController;
 use App\Http\Controllers\web\v1\ResetPasswordController;
@@ -32,7 +33,7 @@ Route::get('/clear-cache', function() {
 
 
 //admin Login Route
-//Route::get('/', [AuthController::class, 'Index'])->name('login');
+Route::get('/', [AuthController::class, 'Index'])->name('login');
 Route::post('/admin_login', [AuthController::class, 'AdminLogin'])->name('admin_login');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -61,6 +62,14 @@ Route::group(['prefix' => 'admin', 'namespace' => 'admin', 'middleware' => ['aut
     //profile
     Route::get('/profile', [ProfileController::class, 'Profile'])->name('admin.profile');
     Route::post('/profile_post', [ProfileController::class, 'ProfilePost'])->name('admin.profile.post');
+
+
+
+    Route::group(['prefix' => 'users'], function () {
+        Route::get('/', [UserController::class, 'Index'])->name('admin.users');
+        Route::delete('/delete/{id}', [UserController::class, 'Destroy'])->name('admin.users.delete');
+        Route::post('/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
+    });
 
 
 

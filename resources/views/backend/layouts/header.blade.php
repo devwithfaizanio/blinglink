@@ -108,22 +108,22 @@
         <div class="dropdown">
             <button class="flex items-center ltr:ml-4 rtl:mr-4 text-gray-700" data-toggle="custom-dropdown-menu"
                     data-tippy-arrow="true" data-tippy-placement="bottom-end">
-                <span class="avatar"><img src="{{auth()->user()->image}}" alt="image"></span>
+                <span class="avatar"><img src="{{auth()->user()->profile_image}}" alt="image"></span>
             </button>
             <div class="custom-dropdown-menu w-64">
                 <div class="p-5">
-                    <h5 class="uppercase">{{auth()->user()->fullname}}</h5>
+                    <h5 class="uppercase">{{auth()->user()->f_name}}</h5>
                     <p>{{auth()->user()->role}}</p>
                 </div>
                 <hr>
                 <div class="p-5">
                     @if(auth()->user()->role == 'admin')
 {{--                    <a href="#"--}}
-{{--                    <a href="{{route('admin.profile')}}"--}}
-{{--                       class="flex items-center text-gray-700 dark:text-gray-500 hover:text-primary dark:hover:text-primary">--}}
-{{--                        <span class="la la-user-circle text-2xl leading-none ltr:mr-2 rtl:ml-2"></span>--}}
-{{--                        View Profile--}}
-{{--                    </a>--}}
+                    <a href="{{route('admin.profile')}}"
+                       class="flex items-center text-gray-700 dark:text-gray-500 hover:text-primary dark:hover:text-primary">
+                        <span class="la la-user-circle text-2xl leading-none ltr:mr-2 rtl:ml-2"></span>
+                        View Profile
+                    </a>
 {{--                    @else--}}
 {{--                        <a href="{{route('coach.profile')}}"--}}
 {{--                           class="flex items-center text-gray-700 dark:text-gray-500 hover:text-primary dark:hover:text-primary">--}}

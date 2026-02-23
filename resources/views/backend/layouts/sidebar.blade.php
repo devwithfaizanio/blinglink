@@ -16,6 +16,10 @@
                 <span class="title">Dashboard</span>
             </a>
 
+            <a href="{{route('admin.users')}}" class="link" data-toggle="tooltip-menu" data-tippy-content="Dashboard">
+                <span class="icon la la-user"></span>
+                <span class="title">Users</span>
+            </a>
 
 
 {{--            <a href="#exercise-link" class="link" data-target="[data-menu=exercises]" data-toggle="tooltip-menu"--}}

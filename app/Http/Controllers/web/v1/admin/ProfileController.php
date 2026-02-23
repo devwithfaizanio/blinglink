@@ -4,7 +4,7 @@ namespace App\Http\Controllers\web\v1\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\v1\ImageService;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
@@ -19,14 +19,18 @@ class ProfileController extends Controller
 //        dd($request->all());
         try {
             $user = User::query()->findOrFail(auth()->user()->id);
-            $user->fname = $request->input('fname') ?? $user->fname;
-            $user->lname = $request->input('lname') ?? $user->lname;
+            $user->f_name = $request->input('f_name') ?? $user->f_name;
             if ($request->hasFile('image')) {
-                $user->image = ImageService::updateImage('images/profile',$request->image, $user->image, 'Profile_');
+                $user->profile_image = ImageService::updateImage('images/user/profile_image',$request->image, $user->profile_image, 'Profile_');
             }
             $user->save();
 
-            return redirect()->back()->with('success', 'update profile ');
+
+            $notification = array(
+                'message' => 'Successfully',
+                'alert-type' => 'success'
+            );
+            return redirect()->back()->with($notification);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

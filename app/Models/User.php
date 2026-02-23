@@ -131,5 +131,49 @@ class User extends Authenticatable
         return $pendingRequest;
     }
 
+    public function getLifestylePreferenceTextAttribute(): string
+    {
+        $value = $this->lifestyle_preference;
+
+        // If it's already an array
+        if (is_array($value)) {
+            return !empty($value) ? implode(', ', $value) : 'N/A';
+        }
+
+        // If it's a JSON string
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+
+            if (is_array($decoded)) {
+                return !empty($decoded) ? implode(', ', $decoded) : 'N/A';
+            }
+
+            return $value; // if it's normal string
+        }
+
+        return 'N/A';
+    }
+
+    public function getInterestTextAttribute(): string
+    {
+        $value = $this->your_interest;
+
+        if (is_array($value)) {
+            return !empty($value) ? implode(', ', $value) : 'N/A';
+        }
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+
+            if (is_array($decoded)) {
+                return !empty($decoded) ? implode(', ', $decoded) : 'N/A';
+            }
+
+            return $value;
+        }
+
+        return 'N/A';
+    }
+
 
 }
