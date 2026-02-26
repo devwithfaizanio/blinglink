@@ -4,9 +4,15 @@ use App\Http\Controllers\api\v1\auth\ForgotPasswordController;
 use App\Http\Controllers\api\v1\auth\UserController;
 use App\Http\Controllers\api\v1\CommunityController;
 use App\Http\Controllers\api\v1\CommunityMessageController;
+use App\Http\Controllers\api\v1\ConciergeController;
+use App\Http\Controllers\api\v1\ConnectionChatController;
 use App\Http\Controllers\api\v1\ConnectionController;
 use App\Http\Controllers\api\v1\EventController;
+use App\Http\Controllers\api\v1\MatchMakerChatController;
+use App\Http\Controllers\api\v1\MentorChatController;
+use App\Http\Controllers\api\v1\paymentController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 //Route::get('/user', function (Request $request) {
@@ -85,8 +91,34 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
         Route::post('/cancel', [ConnectionController::class, 'cancel']);
     });
 
+
+    Route::group(['prefix' => 'connection-chat'],function (){
+        Route::get('/user-list',[ConnectionChatController::class,'ListUserChat']);
+        Route::get('/chat/{id}',[ConnectionChatController::class,'ChatList']);
+        Route::post('/send_message',[ConnectionChatController::class,'SendMessage']);
+    });
+
+    //connect to matchmaker
+    Route::post('/connect-matchmaker', [paymentController::class, 'connectToMatchmaker']);
+    Route::post('/connect-mentor', [paymentController::class, 'connectToMentor']);
+    Route::get('/my-mentors', [paymentController::class, 'myMentors']);
+    Route::get('/my-matchmakers', [paymentController::class, 'myMatchmakers']);
+
+    Route::group(['prefix' => 'mentor-chat'],function (){
+        Route::get('/user-list',[MentorChatController::class,'ListUserChat']);
+        Route::get('/chat/{id}',[MentorChatController::class,'ChatList']);
+        Route::post('/send_message',[MentorChatController::class,'SendMessage']);
+    });
+
+    Route::group(['prefix' => 'matchmaker-chat'],function (){
+        Route::get('/user-list',[MatchMakerChatController::class,'ListUserChat']);
+        Route::get('/chat/{id}',[MatchMakerChatController::class,'ChatList']);
+        Route::post('/send_message',[MatchMakerChatController::class,'SendMessage']);
+    });
 });
 
+
+Route::post('/analysis',[ConciergeController::class,'recommendPlaces']);
 
 //Route::get('/pusher-test', function () {
 //    broadcast(new \App\Events\CommunityMessageSent(

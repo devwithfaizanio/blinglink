@@ -255,6 +255,7 @@ class UserController extends Controller
 
             $matchMakerProfile->phone = $request->phone;
             $matchMakerProfile->city = $request->city;
+            $matchMakerProfile->price = $request->price;
             $matchMakerProfile->experience_years = $request->experience_years;
             $matchMakerProfile->matchmaking_type = json_encode($matchmakingType); // array (json)
             $matchMakerProfile->preferred_age_min = $request->preferred_age_min;

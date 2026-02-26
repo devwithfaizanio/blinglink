@@ -39,7 +39,7 @@
             <h4 class="uppercase">Forgot password here</h4>
         </div>
         @php
-            $data = \DB::table('password_resets')->where('token', $token)->first();
+            $data = \DB::table('password_reset_tokens')->where('token', $token)->first();
 //                dd($data);
             $email = $data->email;
         @endphp

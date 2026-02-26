@@ -4,7 +4,7 @@ namespace App\Http\Controllers\web\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\web\v1\ForgotPassword;
-use App\Mail\v1\ForgotPasswordLinkMail;
+use App\Mail\web\v1\ForgotPasswordLinkMail;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -33,11 +33,6 @@ class ForgotPasswordController extends Controller
                 ['token' => $token, 'created_at' => Carbon::now()] // Data to update/insert
             );
 
-
-//            Mail::send('mails.send-forgot-password-mail', ['token' => $token], function ($message) use ($request) {
-//                $message->to($request->email);
-//                $message->subject('Reset Password');
-//            });
             Mail::to($request->email)->queue(new ForgotPasswordLinkMail($token));
             Session::flash('link_success', ' Reset Link Send Successfully!');
 
@@ -57,7 +52,7 @@ class ForgotPasswordController extends Controller
     public function submitResetPasswordForm(Request $request)
     {
         try {
-            $updatePassword = DB::table('password_resets')
+            $updatePassword = DB::table('password_reset_tokens')
                 ->where([
                     'email' => $request->email,
                     'token' => $request->token,
@@ -68,17 +63,14 @@ class ForgotPasswordController extends Controller
                 return back()->withInput()->with('error_message', 'Invalid token!');
             }
 
-            $user = User::query()->where('email', $request->email)
+             User::query()->where('email', $request->email)
                 ->update(['password' => Hash::make($request->new_password)]);
 
-            DB::table('password_resets')->where(['email' => $request->email])->delete();
+            DB::table('password_reset_tokens')->where(['email' => $request->email])->delete();
 
-            $userRole = User::query()->where('email',$request->email)->first();
-            if($userRole->role == 'coach'){
-                return redirect('/')->with('register_success', 'Your password has been changed!');
-            }else{
-                return redirect('/admin-login')->with('register_success', 'Your password has been changed!');
-            }
+
+            return redirect('/')->with('password_forgot_success', 'Your password has been changed!');
+
 
 
         } catch (\Exception $e) {

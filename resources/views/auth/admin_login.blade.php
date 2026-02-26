@@ -17,10 +17,10 @@
     <nav class="flex items-center ltr:ml-auto rtl:mr-auto">
 
         <!-- Dark Mode -->
-        <label class="switch switch_outlined" data-toggle="tooltip" data-tippy-content="Toggle Dark Mode">
-            <input id="darkModeToggler" type="checkbox">
-            <span></span>
-        </label>
+{{--        <label class="switch switch_outlined" data-toggle="tooltip" data-tippy-content="Toggle Dark Mode">--}}
+{{--            <input id="darkModeToggler" type="checkbox">--}}
+{{--            <span></span>--}}
+{{--        </label>--}}
         <!-- Fullscreen -->
         <button id="fullScreenToggler" type="button"
                 class="hidden lg:inline-block btn-link ltr:ml-5 rtl:mr-5 text-2xl leading-none la la-expand-arrows-alt"
@@ -32,6 +32,15 @@
 
 <div class="container flex items-center justify-center mt-20 py-10">
     <div class="w-full md:w-1/2 xl:w-1/3">
+        @if (Session::has('password_forgot_success'))
+            <div class="alert alert_outlined alert_primary mt-5">
+                <strong class="uppercase">
+                    <bdi>Success!</bdi>
+                </strong>
+                {{ Session::get('password_forgot_success') }}
+                <button type="button" class="dismiss la la-times" data-dismiss="alert"></button>
+            </div>
+        @endif
         @if (Session::has('login_error_exception'))
             <div class="alert alert_outlined alert_primary mt-5">
                 <strong class="uppercase">
@@ -90,6 +99,40 @@
 <!-- Scripts -->
 @include('backend.layouts.script')
 </body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const root = document.documentElement;
+        const toggler = document.getElementById("darkModeToggler");
+
+        if (!toggler) return;
+
+        // 🔥 Force dark mode by default if nothing saved
+        let scheme = localStorage.getItem("scheme");
+        if (!scheme) {
+            scheme = "dark";
+            localStorage.setItem("scheme", "dark");
+        }
+
+        root.classList.remove("light", "dark");
+        root.classList.add(scheme);
+
+        toggler.checked = scheme === "dark";
+
+        // Toggle manually
+        toggler.addEventListener("change", function () {
+            if (this.checked) {
+                root.classList.remove("light");
+                root.classList.add("dark");
+                localStorage.setItem("scheme", "dark");
+            } else {
+                root.classList.remove("dark");
+                root.classList.add("light");
+                localStorage.setItem("scheme", "light");
+            }
+        });
+    });
+</script>
 <!-- Javascript Requirements -->
 <script src="{{asset('js-validation/jquery.min.js')}}"></script>
 <script src="{{asset('js-validation/bootstrap.min.js')}}"></script>

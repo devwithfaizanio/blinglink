@@ -78,3 +78,5 @@ Route::group(['prefix' => 'admin', 'namespace' => 'admin', 'middleware' => ['aut
     Route::post('/settings', [SettingController::class, 'store'])->name('admin_settings_store');
 
 });
+
+

@@ -23,6 +23,11 @@ class UserListResource extends JsonResource
             'bio' => $this->bio,
             'profile_image' => $this->profile_image,
         ];
+        if($this->role == 'matchmaker'){
+            $data['matchmaker_profile'] = matchMakerProfileResource::make($this->matchmakerProfile);
+        }elseif($this->role == 'mentor'){
+            $data['mentor_profile'] = mentorProfileResource::make($this->mentorProfile);
+        }
 
         return $data;
 

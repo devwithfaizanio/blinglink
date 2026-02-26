@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('phone')->nullable();
             $table->string('city')->nullable();
+            $table->string('price')->nullable();
 
 
             // Matchmaking Info

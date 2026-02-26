@@ -11,6 +11,7 @@ class MatchmakerProfiles extends Model
         'user_id',
         'phone',
         'city',
+        'price',
         'experience_years',
         'matchmaking_type',
         'preferred_age_min',

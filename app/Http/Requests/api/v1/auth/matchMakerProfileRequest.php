@@ -13,6 +13,7 @@ class matchMakerProfileRequest extends FormRequest
         return [
             'phone' => 'required|string',
             'city' => 'required|string',
+            'price' => 'required|string',
 
             'experience_years' => 'nullable|integer|min:0',
 
@@ -38,6 +39,7 @@ class matchMakerProfileRequest extends FormRequest
         return [
             'phone.required' => 'Phone is required',
             'city.required' => 'City is required',
+            'price.required' => 'Price is required',
             'experience_years.integer' => 'Experience years must be an integer',
             'experience_years.min' => 'Experience years must be at least 0',
             'matchmaking_type.required' => 'Matchmaking type is required',

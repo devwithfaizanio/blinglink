@@ -28,10 +28,10 @@
 {{--        <button class="btn btn_outlined btn_primary uppercase ltr:ml-auto rtl:mr-auto mr-2">Home</button>--}}
 {{--        </a>--}}
         <!-- Dark Mode -->
-        <label class="switch switch_outlined" data-toggle="tooltip" data-tippy-content="Toggle Dark Mode">
-            <input id="darkModeToggler" type="checkbox">
-            <span></span>
-        </label>
+{{--        <label class="switch switch_outlined" data-toggle="tooltip" data-tippy-content="Toggle Dark Mode">--}}
+{{--            <input id="darkModeToggler" type="checkbox">--}}
+{{--            <span></span>--}}
+{{--        </label>--}}
 
         <!-- Fullscreen -->
         <button id="fullScreenToggler" type="button"
@@ -150,3 +150,39 @@
         </div>
     </div>
 </header>
+
+@section('script')
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const root = document.documentElement;
+            const toggler = document.getElementById("darkModeToggler");
+
+            if (!toggler) return;
+
+            // 🔥 Force dark mode by default if nothing saved
+            let scheme = localStorage.getItem("scheme");
+            if (!scheme) {
+                scheme = "dark";
+                localStorage.setItem("scheme", "dark");
+            }
+
+            root.classList.remove("light", "dark");
+            root.classList.add(scheme);
+
+            toggler.checked = scheme === "dark";
+
+            // Toggle manually
+            toggler.addEventListener("change", function () {
+                if (this.checked) {
+                    root.classList.remove("light");
+                    root.classList.add("dark");
+                    localStorage.setItem("scheme", "dark");
+                } else {
+                    root.classList.remove("dark");
+                    root.classList.add("light");
+                    localStorage.setItem("scheme", "light");
+                }
+            });
+        });
+    </script>
+@endsection

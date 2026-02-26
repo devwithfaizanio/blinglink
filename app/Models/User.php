@@ -175,5 +175,48 @@ class User extends Authenticatable
         return 'N/A';
     }
 
+    public function connectionChatLastMessage($userId)
+    {
+
+        $lastMessge =  ConnectionChat::query()
+            ->where('from_id', $userId)
+            ->where('to_id', request()->user()->id)
+            ->orWhere(function($query) use ($userId) {
+                $query->where('to_id', $userId)
+                    ->where('from_id', request()->user()->id);
+            })
+            ->latest()
+            ->first();
+        return $lastMessge;
+    }
+    public function mentorChatLastMessage($userId)
+    {
+
+        $lastMessge =  MentorChat::query()
+            ->where('from_id', $userId)
+            ->where('to_id', request()->user()->id)
+            ->orWhere(function($query) use ($userId) {
+                $query->where('to_id', $userId)
+                    ->where('from_id', request()->user()->id);
+            })
+            ->latest()
+            ->first();
+        return $lastMessge;
+    }
+
+    public function matchmakerChatLastMessage($userId)
+    {
+        $lastMessge =  MatchMakerChat::query()
+            ->where('from_id', $userId)
+            ->where('to_id', request()->user()->id)
+            ->orWhere(function($query) use ($userId) {
+                $query->where('to_id', $userId)
+                    ->where('from_id', request()->user()->id);
+            })
+            ->latest()
+            ->first();
+        return $lastMessge;
+    }
+
 
 }
