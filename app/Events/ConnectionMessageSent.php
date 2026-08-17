@@ -20,15 +20,22 @@ class ConnectionMessageSent implements ShouldBroadcastNow
         $this->message = $message->load('fromUser'); // adjust relation name if different
     }
 
+//    public function broadcastOn()
+//    {
+//        // Private channel between two users
+//        return new PrivateChannel('connection.' . $this->message->from_id . '.' . $this->message->to_id);
+//    }
     public function broadcastOn()
     {
-        // Private channel between two users
-        return new PrivateChannel('connection.' . $this->message->from_id . '.' . $this->message->to_id);
+        $ids = [$this->message->from_id, $this->message->to_id];
+        sort($ids);
+
+        return new PrivateChannel('connection.' . $ids[0] . '.' . $ids[1]);
     }
 
     public function broadcastAs()
     {
-        return 'message.sent';
+        return 'connection.message.sent';
     }
 
     public function broadcastWith(): array

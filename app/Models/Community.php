@@ -14,7 +14,8 @@ class Community extends Model
         'description',
         'image',
         'creator_id',
-        'is_active'
+        'is_active',
+        'status'
     ];
 
     protected $casts = [

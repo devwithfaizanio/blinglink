@@ -38,5 +38,9 @@ return [
     'openai' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
     ],
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+    ],
 
 ];

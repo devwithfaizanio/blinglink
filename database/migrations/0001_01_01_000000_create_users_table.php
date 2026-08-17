@@ -40,7 +40,9 @@ return new class extends Migration
 
             $table->string('fcm_token')->nullable();
 
+
             $table->boolean('is_approved')->default(false);
+            $table->string('customer_id')->nullable();
 
             $table->rememberToken();
             $table->timestamps();

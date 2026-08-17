@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\api\v1\events\createEventsRequest;
 use App\Http\Requests\api\v1\events\getEventsRequest;
 use App\Http\Requests\api\v1\events\updateEventsRequest;
+use App\Http\Requests\api\v1\events\updateStatusRequest;
 use App\Http\Resources\api\v1\events\EventResource;
 use App\Models\Event;
 use App\Models\EventAttendee;
@@ -52,7 +53,7 @@ class EventController extends Controller
         $event->event_type = $request->event_type;
         $event->ticket_price = $request->ticket_price;
         $event->max_attendees = $request->max_attendees;
-        $event->status = 'active';
+        $event->status = 'pending';
 
         // Handle image upload
         if ($request->hasFile('event_image')) {
@@ -171,6 +172,20 @@ class EventController extends Controller
         );
 
         return $this->success(message: 'Event join cancelled successfully');
+    }
+
+    public function updateStatus(updateStatusRequest $request, $eventId)
+    {
+        $event = Event::find($eventId);
+        //not found
+        if (!$event) {
+            return $this->notFound(message: 'Event not found');
+        }
+
+        $event->status = $request->status ?? $event->status;
+        $event->save();
+
+        return $this->success(message: 'status updated successfully');
     }
 
 }

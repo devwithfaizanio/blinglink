@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\v1\admin\PromoCodeController;
 use App\Http\Controllers\api\v1\auth\ForgotPasswordController;
 use App\Http\Controllers\api\v1\auth\UserController;
 use App\Http\Controllers\api\v1\CommunityController;
@@ -11,6 +12,8 @@ use App\Http\Controllers\api\v1\EventController;
 use App\Http\Controllers\api\v1\MatchMakerChatController;
 use App\Http\Controllers\api\v1\MentorChatController;
 use App\Http\Controllers\api\v1\paymentController;
+use App\Http\Controllers\api\v1\ReportController;
+use App\Http\Controllers\api\v1\StripeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +59,7 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
     Route::get('/communities/{communityId}', [CommunityController::class, 'show']);
 //    Route::put('/communities/{id}', [CommunityController::class, 'update']);
     Route::delete('/communities/{communityId}', [CommunityController::class, 'destroy']);
+    Route::post('/communities/accept-decline', [CommunityController::class, 'acceptDecline']);
 
     // Community members routes
     Route::get('/communities/{communityId}/members', [CommunityController::class, 'getMembers']);
@@ -69,6 +73,9 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
 
 
 
+
+
+
     Route::prefix('events')->group(function() {
         Route::get('/all', [EventController::class, 'allEvents']);
         Route::post('/create', [EventController::class, 'store']);
@@ -77,6 +84,7 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
         Route::delete('/delete/{eventId}', [EventController::class, 'destroy']);
         Route::post('/{eventId}/join', [EventController::class, 'join']);
         Route::post('/{eventId}/cancel-join', [EventController::class, 'cancelJoin']);
+        Route::post('/{eventId}/update-status', [EventController::class, 'updateStatus']);
     });
 
 
@@ -115,10 +123,87 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
         Route::get('/chat/{id}',[MatchMakerChatController::class,'ChatList']);
         Route::post('/send_message',[MatchMakerChatController::class,'SendMessage']);
     });
+
+    Route::post('/recommended-clubs',[ConciergeController::class,'recommendPlaces']);
+    Route::get('/inspiration',[ConciergeController::class,'relationshipInspiration']);
+
+
+    Route::get('generate_Ephemeral_Key', [StripeController::class,'generateEphemeralKey']);
+
+
+
+
+    Route::post('/reports', [ReportController::class, 'store']);
+
+
+    Route::prefix('admin')->middleware('role:admin')->group(function () {
+
+        Route::get('/reports', [ReportController::class, 'index']);
+        Route::post('/reports-update', [ReportController::class, 'update']);
+
+
+
+        Route::group(['prefix' => 'users'],function (){
+            Route::get('/list',[App\Http\Controllers\api\v1\admin\UserController::class,'allUsers']);
+            Route::get('/detail/{userId}',[App\Http\Controllers\api\v1\admin\UserController::class,'singleUser']);
+            Route::post('/verify',[App\Http\Controllers\api\v1\admin\UserController::class,'verifyUser']);
+            Route::post('/account-status-update',[App\Http\Controllers\api\v1\admin\UserController::class,'accountStatusUpdate']);
+            Route::get('/network', [App\Http\Controllers\api\v1\admin\UserController::class, 'netWork']);
+        });
+        Route::get('/matchmaker_list',[App\Http\Controllers\api\v1\admin\UserController::class,'getMatchmakers']);
+
+
+
+        Route::group(['prefix' => 'blogs'], function () {
+            Route::get('/list', [App\Http\Controllers\api\v1\admin\BlogController::class, 'index']);
+            Route::get('/detail/{blogId}', [App\Http\Controllers\api\v1\admin\BlogController::class, 'show']);
+            Route::post('/store', [App\Http\Controllers\api\v1\admin\BlogController::class, 'store']);
+            Route::post('/update/{blogId}', [App\Http\Controllers\api\v1\admin\BlogController::class, 'update']);
+            Route::delete('/delete/{blogId}', [App\Http\Controllers\api\v1\admin\BlogController::class, 'destroy']);
+            Route::post('/change-status', [App\Http\Controllers\api\v1\admin\BlogController::class, 'changeStatus']);
+
+        });
+
+
+        Route::group(['prefix' => 'chats'], function () {
+            Route::get('/connection_chats_user_list', [App\Http\Controllers\api\v1\admin\ChatsController::class, 'connectionChatsUserList']);
+            Route::get('/connection_chat_list', [App\Http\Controllers\api\v1\admin\ChatsController::class, 'connectionChatList']);
+
+
+
+            Route::get('/matchmaker_chats_user_list', [App\Http\Controllers\api\v1\admin\ChatsController::class, 'matchmakerChatsUserList']);
+            Route::get('/matchmaker_chat_list', [App\Http\Controllers\api\v1\admin\ChatsController::class, 'matchmakerChatList']);
+
+
+            Route::get('/mentor_chats_user_list', [App\Http\Controllers\api\v1\admin\ChatsController::class, 'mentorChatsUserList']);
+            Route::get('/mentor_chat_list', [App\Http\Controllers\api\v1\admin\ChatsController::class, 'mentorChatList']);
+        });
+
+
+
+
+        Route::group(['prefix' => 'trophy'], function () {
+            Route::get('/list', [App\Http\Controllers\api\v1\admin\TrophyController::class, 'index']);
+            Route::post('/store', [App\Http\Controllers\api\v1\admin\TrophyController::class, 'store']);
+            Route::post('/update', [App\Http\Controllers\api\v1\admin\TrophyController::class, 'update']);
+            Route::post('/assign', [App\Http\Controllers\api\v1\admin\TrophyController::class, 'assignTrophy']);
+            Route::post('/remove', [App\Http\Controllers\api\v1\admin\TrophyController::class, 'removeTrophy']);
+        });
+
+        Route::group(['prefix' => 'promo-codes'], function () {
+            Route::get('/list', [PromoCodeController::class, 'index']);
+            Route::get('/detail/{id}', [PromoCodeController::class, 'show']);
+            Route::post('/store', [PromoCodeController::class, 'store']);
+            Route::post('/update/{id}', [PromoCodeController::class, 'update']);
+            Route::delete('/delete/{id}', [PromoCodeController::class, 'destroy']);
+        });
+
+    });
+
 });
 
 
-Route::post('/analysis',[ConciergeController::class,'recommendPlaces']);
+
 
 //Route::get('/pusher-test', function () {
 //    broadcast(new \App\Events\CommunityMessageSent(

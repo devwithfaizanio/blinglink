@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\api\v1\events;
 
+use App\Http\Resources\api\v1\auth\profileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -33,6 +34,7 @@ class EventResource extends JsonResource
             'joined' => $this->attendees()->where('user_id', auth()->id())->where('status', 'going')->exists(),
             'cancelled' => $this->attendees()->where('user_id', auth()->id())->where('status', 'cancelled')->exists(),
             'joinButtonDisabled' => $this->attendees()->where('status', 'going')->count() < (int) $this->max_attendees ? false : true,
+            'creator' => $this->user ? profileResource::make($this->user) : null,
         ];
     }
 }

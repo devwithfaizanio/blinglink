@@ -13,7 +13,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => 'required|email|exists:users,email',
             'password' => 'required|string',
-            'fcm_token' => 'required|string'
+            'fcm_token' => 'nullable|string'
         ];
     }
     //custom messages
@@ -24,7 +24,7 @@ class LoginRequest extends FormRequest
             'email.email' => 'Email is not valid',
             'email.exists' => 'Email is does not exist',
             'password.required' => 'Password is required',
-            'fcm_token.required' => 'FCM Token is required',
+//            'fcm_token.required' => 'FCM Token is required',
         ];
     }
 

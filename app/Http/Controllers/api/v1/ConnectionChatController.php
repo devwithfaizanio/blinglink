@@ -102,7 +102,8 @@ class ConnectionChatController extends Controller
         $message->save();
 
         // Broadcast like Pusher
-        broadcast(new ConnectionMessageSent($message))->toOthers();
+//        broadcast(new ConnectionMessageSent($message))->toOthers();
+        broadcast(new ConnectionMessageSent($message));
 
         return $this->success(message: 'Successfully');
     }

@@ -15,6 +15,7 @@ use App\Http\Resources\api\v1\auth\profileResource;
 use App\Http\Resources\api\v1\auth\UserListResource;
 use App\Models\MatchmakerProfiles;
 use App\Models\MentorProfile;
+use App\Models\PromoCode;
 use App\Models\User;
 use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
@@ -52,6 +53,31 @@ class UserController extends Controller
             if ($request->hasFile('profile_image')) {
                 $profileImage = ImageService::addImage('images/user/profile_image', $request->file('profile_image'), 'profile_image_');
             }
+            $promoCode = null;
+            if ($request->filled('promo_code')) {
+                $promoCode = PromoCode::where('code', strtoupper($request->promo_code))->first();
+
+                if (!$promoCode) {
+                    return $this->error(message: 'Invalid promo code', code: 400);
+                }
+
+                if ($promoCode->status !== 'active') {
+                    return $this->error(message: 'This promo code is inactive', code: 400);
+                }
+
+                if ($promoCode->start_date && $promoCode->start_date > now()) {
+                    return $this->error(message: 'This promo code is not active yet', code: 400);
+                }
+
+                if ($promoCode->expires_at && $promoCode->expires_at < now()) {
+                    return $this->error(message: 'This promo code has expired', code: 400);
+                }
+
+                if ($promoCode->max_uses !== null && $promoCode->uses_count >= $promoCode->max_uses) {
+                    return $this->error(message: 'This promo code usage limit has been reached', code: 400);
+                }
+            }
+
             // Create User
             $user = User::create([
                 'f_name' => $request->f_name,
@@ -77,8 +103,14 @@ class UserController extends Controller
                 'bio' => $request->bio,
                 'linkedin_profile' => $request->linkedin_profile,
                 'emirate_id' => $emirateId,
+                'promo_code_id' => $promoCode?->id,
+                'subscription_plan' => $promoCode ? 'vip' : null,
                 'is_approved' => false,
             ]);
+
+            if ($promoCode) {
+                $promoCode->increment('uses_count');
+            }
 
             return $this->forbidden(
                 message: 'User registered successfully',
@@ -104,7 +136,8 @@ class UserController extends Controller
             }
 
 
-            if (!$user->is_approved) {
+
+            if (!$user->is_approved && $user->role != 'admin') {
                 return $this->forbidden( message: 'Your account is not approved yet',
                     data: [
                         'is_approved' => false
@@ -122,7 +155,8 @@ class UserController extends Controller
                 message: 'Logged in successfully',
                 data: [
                     'token' => $user->createToken('API TOKEN')->plainTextToken,
-                    'is_approved' => true
+                    'is_approved' => true,
+                    'role' => $user->role,
                 ]
             );
         } catch (\Throwable $th) {
@@ -169,7 +203,8 @@ class UserController extends Controller
         try {
             $role = $request->role;
 
-            $users = User::when($role !== 'all', function ($query) use ($role) {
+            $users = User::query()->where('id', '!=', auth()->id())->where('is_approved', true)
+                ->when($role !== 'all', function ($query) use ($role) {
                 $query->where('role', $role);
             })
                 ->when($role === 'all', function ($query) {
@@ -337,13 +372,14 @@ class UserController extends Controller
 
             if ($request->hasFile('emirate_id')) {
                 $emirateId = ImageService::updateImage('images/user/emirate_id', $request->file('emirate_id'),$authUser->emirate_id, 'emirate_');
+                $authUser->emirate_id = $emirateId;
             }
             if ($request->hasFile('profile_image')) {
                 $profileImage = ImageService::updateImage('images/user/profile_image', $request->file('profile_image'), $authUser->profile_image,'profile_image_');
+                $authUser->profile_image = $profileImage;
             }
 
             $authUser->f_name = $request->f_name ?? $authUser->f_name;
-            $authUser->profile_image = $profileImage ?? $authUser->profile_image;
             $authUser->age = $request->age ?? $authUser->age;
             $authUser->gender = $request->gender ?? $authUser->gender;
             $authUser->nationality = $request->nationality ?? $authUser->nationality;
@@ -358,7 +394,6 @@ class UserController extends Controller
 
             $authUser->bio = $request->bio ?? $authUser->bio;
             $authUser->linkedin_profile = $request->linkedin_profile ?? $authUser->linkedin_profile;
-            $authUser->emirate_id = $emirateId ?? $authUser->emirate_id;
             $authUser->save();
 
             return $this->success(

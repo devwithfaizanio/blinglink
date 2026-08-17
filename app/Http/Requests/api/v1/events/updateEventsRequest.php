@@ -30,7 +30,7 @@ class updateEventsRequest extends FormRequest
 
             'event_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
-            'status' => 'nullable|string|in:active,cancelled,completed',
+            'status' => 'nullable|string|in:pending,approve,rejected,completed',
 
 
 
@@ -54,7 +54,7 @@ class updateEventsRequest extends FormRequest
             'event_image.mimes' => 'Event image must be a file of type: jpeg, png, jpg, gif.',
             'event_image.max' => 'Event image size must not exceed 2048 kilobytes.',
 
-            'status.in' => 'The status field must be one of the following values: active, cancelled, completed.',
+            'status.in' => 'The status field must be one of the following values: pending, approve, rejected, completed.',
         ];
     }
 

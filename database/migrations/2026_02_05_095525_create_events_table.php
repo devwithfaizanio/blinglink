@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('max_attendees')->nullable();
             $table->decimal('ticket_price', 10, 2)->default(0);
             $table->string('event_image')->nullable();
-            $table->enum('status', ['active', 'cancelled','completed'])->default('active');
+            $table->enum('status', ['pending','approve','rejected','completed'])->default('pending');
             $table->timestamps();
         });
     }

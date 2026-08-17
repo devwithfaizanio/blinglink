@@ -6,7 +6,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
+use Stripe\Customer;
+use Stripe\Exception\ApiErrorException;
 
 class User extends Authenticatable
 {
@@ -41,7 +44,17 @@ class User extends Authenticatable
         'bio',
         'linkedin_profile',
         'emirate_id',
-        'profile_image'
+        'profile_image',
+
+        'subscription_plan',
+        'recommendation_count',
+        'recommendation_reset_at',
+        'customer_id',
+        'status',
+        'trophy_id',
+        'trophy_reward',
+        'promo_code_id',
+        'is_approved'
     ];
 
 
@@ -67,8 +80,14 @@ class User extends Authenticatable
             'password' => 'hashed',
             'lifestyle_preference' => 'array',
             'your_interest' => 'array',
+            'recommendation_reset_at' => 'datetime',
         ];
     }
+
+    protected $attributes = [
+        'subscription_plan'    => 'free',  // default
+        'recommendation_count' => 0,
+    ];
 
     public function getEmirateIdAttribute($image): ?string
     {
@@ -219,4 +238,101 @@ class User extends Authenticatable
     }
 
 
+
+
+    public function getRecommendationLimit(): int
+    {
+        return match($this->subscription_plan) {
+            'free'    => 10,
+            'basic'   => 20,
+            'premium' => 50,
+            'vip'     => 999999,
+            default   => 10,
+        };
+    }
+
+    public function hasReachedRecommendationLimit(): bool
+    {
+        return $this->recommendation_count >= $this->getRecommendationLimit();
+    }
+
+    public function resetRecommendationIfNewMonth(): void
+    {
+        if (
+            is_null($this->recommendation_reset_at) ||
+            $this->recommendation_reset_at->month !== now()->month ||
+            $this->recommendation_reset_at->year  !== now()->year
+        ) {
+            $this->update([
+                'recommendation_count'    => 0,
+                'recommendation_reset_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * @return Customer|null
+     *@throws ApiErrorException
+     */
+    public function createOrGetStripeCustomer(): ?Customer
+    {
+        if(isset($this->customer_id)){
+            try {
+                $customer =  Customer::retrieve($this->customer_id);
+
+                return $customer->isDeleted() ? $this->createCustomer() : $customer;
+
+            } catch (ApiErrorException $e) {
+                return $this->createCustomer();
+            }
+        }else {
+            return $this->createCustomer();
+        }
+    }
+
+    /**
+     * @return Customer
+     * @throws ApiErrorException
+     */
+    private function createCustomer(): Customer
+    {
+        try {
+            $customer = Customer::search([
+                'query' => 'email~' . $this->email,
+            ])->first();
+            if(filled($customer) && !$customer->isDeleted()){
+
+                $this->customer_id = $customer->id;
+                $this->save();
+                return $customer;
+            }
+        } catch (ApiErrorException $e) {
+            Log::error($e->getMessage(), $e->getTrace());
+        }
+
+        $customer = Customer::create([
+            'email' => $this->email,
+            'description' => 'Customer for ' . $this->email,
+            'shipping' => [
+                'address' => [
+                    'city' => $this->nationality,
+                ],
+                'name' => $this->f_name,
+            ]
+        ]);
+
+        $this->customer_id = $customer->id;
+        $this->save();
+        return $customer;
+    }
+
+    public function trophy()
+    {
+        return $this->belongsTo(Trophy::class, 'trophy_id');
+    }
+
+    public function promoCode()
+    {
+        return $this->belongsTo(PromoCode::class, 'promo_code_id');
+    }
 }

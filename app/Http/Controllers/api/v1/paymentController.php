@@ -127,11 +127,11 @@ class paymentController extends Controller
     {
         $authUser = auth()->user();
 
-        if ($authUser->role !== 'user') {
-            return $this->forbidden(
-                message: 'Only users can view their mentors.'
-            );
-        }
+//        if ($authUser->role !== 'user') {
+//            return $this->forbidden(
+//                message: 'Only users can view their mentors.'
+//            );
+//        }
 
         $mentors = ConnectionToMentor::query()->where('user_id', $authUser->id)->get();
 
@@ -147,11 +147,11 @@ class paymentController extends Controller
     {
         $authUser = auth()->user();
 
-        if ($authUser->role !== 'user') {
-            return $this->forbidden(
-                message: 'Only users can view their matchmakers.'
-            );
-        }
+//        if ($authUser->role !== 'user') {
+//            return $this->forbidden(
+//                message: 'Only users can view their matchmakers.'
+//            );
+//        }
 
         $matchmakers = ConnectionToMatchmaker::query()->where('user_id', $authUser->id)->get();
 

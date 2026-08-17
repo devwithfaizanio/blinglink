@@ -37,6 +37,10 @@ class profileResource extends JsonResource
             'is_approved' => (bool) $this->is_approved,
             'hasMatchmakerProfile' => $this->matchmakerProfile ? true : false,
             'hasMentorProfile' => $this->mentorProfile ? true : false,
+            'trophy_id' => $this->trophy_id ?? null,
+            'promo_code_id' => $this->promo_code_id ?? null,
+            'promo_code' => $this->promoCode ? $this->promoCode->code : null,
+            'subscription_plan' => $this->subscription_plan ?? null,
         ];
 
         if ($this->role === 'matchmaker') {

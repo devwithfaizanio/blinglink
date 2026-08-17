@@ -29,7 +29,7 @@ class MatchmakerMessageSent implements ShouldBroadcastNow
 
     public function broadcastAs()
     {
-        return 'message.sent';
+        return 'matchmaker.message.sent';
     }
 
     public function broadcastWith(): array

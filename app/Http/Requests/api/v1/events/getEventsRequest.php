@@ -13,7 +13,7 @@ class getEventsRequest extends FormRequest
         return [
             'limit' => 'sometimes|integer|min:1',
             'page' => 'sometimes|integer|min:1',
-            'status' => 'nullable|string|in:all,active,cancelled,completed',
+            'status' => 'nullable|string|in:all,pending,approve,rejected,completed',
             'isMine' => 'sometimes|boolean',
         ];
     }
@@ -21,7 +21,7 @@ class getEventsRequest extends FormRequest
     public function messages()
     {
         return [
-            'status.in' => 'The status field must be one of the following values: all, active, cancelled, completed.',
+            'status.in' => 'The status field must be one of the following values: all, pending, approve, rejected, completed.',
         ];
     }
 

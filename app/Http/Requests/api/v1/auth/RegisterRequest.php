@@ -16,7 +16,7 @@ class RegisterRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string',
             'password_confirmation' => 'required|string|same:password',
-            'fcm_token' => 'required|string',
+            'fcm_token' => 'nullable|string',
 
             'age' => 'required|integer',
             'gender' => 'required|string',
@@ -38,6 +38,7 @@ class RegisterRequest extends FormRequest
             'emirate_id' => 'required|image|mimes:jpeg,png,jpg,gif',
 
             'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif',
+            'promo_code' => 'nullable|string',
         ];
     }
 
@@ -56,7 +57,7 @@ class RegisterRequest extends FormRequest
             'password_confirmation.required' => 'Confirm Password is required',
             'password_confirmation.same' => 'Password and Confirm Password must be same',
 
-            'fcm_token.required' => 'FCM Token is required',
+//            'fcm_token.required' => 'FCM Token is required',
 
             'age.required' => 'Age is required',
             'age.integer' => 'Age must be a number',

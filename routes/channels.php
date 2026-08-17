@@ -23,21 +23,42 @@ Broadcast::channel('community.{communityId}', function ($user, $communityId) {
 });
 
 
-Broadcast::channel('connection.{fromId}.{toId}', function ($user, $fromId, $toId) {
+//Broadcast::channel('connection.{fromId}.{toId}', function ($user, $fromId, $toId) {
+//
+//    // User must be one of the two
+//    if ($user->id != $fromId && $user->id != $toId) {
+//        return false;
+//    }
+//
+//    // Must be accepted connection
+//    return Connection::query()->where(function ($query) use ($fromId, $toId) {
+//        $query->where('requester_id', $fromId)
+//            ->where('requested_id', $toId);
+//    })
+//        ->orWhere(function ($query) use ($fromId, $toId) {
+//            $query->where('requester_id', $toId)
+//                ->where('requested_id', $fromId);
+//        })
+//        ->where('status', 'accepted')
+//        ->exists();
+//});
+Broadcast::channel('connection.{user1}.{user2}', function ($user, $user1, $user2) {
 
-    // User must be one of the two
-    if ($user->id != $fromId && $user->id != $toId) {
+    if ($user->id != $user1 && $user->id != $user2) {
         return false;
     }
 
-    // Must be accepted connection
-    return Connection::query()->where(function ($query) use ($fromId, $toId) {
-        $query->where('requester_id', $fromId)
-            ->where('requested_id', $toId);
-    })
-        ->orWhere(function ($query) use ($fromId, $toId) {
-            $query->where('requester_id', $toId)
-                ->where('requested_id', $fromId);
+    $ids = [$user1, $user2];
+    sort($ids);
+
+    return Connection::query()
+        ->where(function ($query) use ($ids) {
+            $query->where('requester_id', $ids[0])
+                ->where('requested_id', $ids[1]);
+        })
+        ->orWhere(function ($query) use ($ids) {
+            $query->where('requester_id', $ids[1])
+                ->where('requested_id', $ids[0]);
         })
         ->where('status', 'accepted')
         ->exists();

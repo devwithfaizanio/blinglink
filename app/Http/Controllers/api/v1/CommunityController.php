@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\api\v1\community\acceptRejectRequest;
 use App\Http\Requests\api\v1\community\addCommunityMemberRequest;
 use App\Http\Requests\api\v1\community\createCommunityRequest;
+use App\Http\Requests\api\v1\community\getCommunitiesRequest;
 use App\Http\Resources\api\v1\community\getAllCommunities;
 use App\Http\Resources\api\v1\community\getMemberListResource;
 use App\Services\ImageService;
@@ -16,24 +18,64 @@ use Illuminate\Support\Facades\Validator;
 class CommunityController extends Controller
 {
     // Get all communities for authenticated user
-    public function index()
-    {
-        $user = Auth::user();
+//    public function index()
+//    {
+//        $user = Auth::user();
+//
+//        $communities = Community::where('creator_id', $user->id)
+//            ->orWhereHas('members', function($query) use ($user) {
+//                $query->where('user_id', $user->id);
+//            })
+//            ->with(['creator', 'members'])
+//            ->latest()
+//            ->get();
+//        $showMembers = false;
+//
+//        return $this->success(message: 'All Communities', data: getAllCommunities::collection(
+//                $communities->values()
+//            )->map(fn($item) => new getAllCommunities($item, $showMembers)),
+//        );
+//
+//    }
 
-        $communities = Community::where('creator_id', $user->id)
-            ->orWhereHas('members', function($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->with(['creator', 'members'])
+    public function index(getCommunitiesRequest $request)
+    {
+        $limit = $request->limit ?? 10;
+        $isMine = $request->boolean('isMine', false);
+        $status = $request->status ?? 'all';
+
+        if ($isMine) {
+            // Only communities created by the authenticated user
+//            $query = Community::where('creator_id', auth()->id());
+            $user = Auth::user();
+            $query = Community::where('creator_id', $user->id)
+                ->orWhereHas('members', function ($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                });
+        } else {
+            // All communities
+            $query = Community::query();
+        }
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $communities = $query->with(['creator', 'members'])
             ->latest()
-            ->get();
+            ->paginate($limit);
+
+        $paginationInfo = getPaginationInfo($communities, $limit);
         $showMembers = false;
 
-        return $this->success(message: 'All Communities', data: getAllCommunities::collection(
-                $communities->values()
-            )->map(fn($item) => new getAllCommunities($item, $showMembers)),
+        return $this->success(
+            message: 'All Communities',
+            data: [
+                'communities' => getAllCommunities::collection($communities)
+                    ->map(fn ($item) => new getAllCommunities($item, $showMembers)),
+                'pagination' => $paginationInfo,
+            ]
         );
-
     }
 
     // Create a new community
@@ -284,6 +326,26 @@ class CommunityController extends Controller
         }
 
         return $this->success(message: 'success', data: getMemberListResource::make($community->load('members')));
+    }
+
+
+
+    public function acceptDecline(acceptRejectRequest $request)
+    {
+        $community = Community::findOrFail($request->community_id);
+
+        $community->update([
+            'status' => $request->status,
+        ]);
+
+        $message = $request->status === 'accepted'
+            ? 'Accepted successfully.'
+            : 'Declined successfully.';
+
+
+
+        return $this->success(message: $message, data: null);
+
     }
 
 
