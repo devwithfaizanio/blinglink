@@ -54,7 +54,9 @@ class User extends Authenticatable
         'trophy_id',
         'trophy_reward',
         'promo_code_id',
-        'is_approved'
+        'is_approved',
+        'referral_code',
+        'referred_by_id'
     ];
 
 
@@ -334,5 +336,38 @@ class User extends Authenticatable
     public function promoCode()
     {
         return $this->belongsTo(PromoCode::class, 'promo_code_id');
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function ($user) {
+            if (empty($user->referral_code)) {
+                $user->referral_code = static::generateUniqueReferralCode();
+            }
+        });
+    }
+
+    public static function generateUniqueReferralCode(): string
+    {
+        do {
+            $code = 'BLING-' . strtoupper(\Illuminate\Support\Str::random(6));
+        } while (static::where('referral_code', $code)->exists());
+
+        return $code;
+    }
+
+    public function referrer()
+    {
+        return $this->belongsTo(User::class, 'referred_by_id');
+    }
+
+    public function referrals()
+    {
+        return $this->hasMany(User::class, 'referred_by_id');
+    }
+
+    public function referralInvites()
+    {
+        return $this->hasMany(UserReferral::class, 'referrer_id');
     }
 }

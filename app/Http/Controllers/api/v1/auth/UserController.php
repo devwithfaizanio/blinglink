@@ -13,10 +13,13 @@ use App\Http\Requests\api\v1\auth\switchRoleRequest;
 use App\Http\Requests\api\v1\auth\updateProfileRequest;
 use App\Http\Resources\api\v1\auth\profileResource;
 use App\Http\Resources\api\v1\auth\UserListResource;
+use App\Models\Connection;
 use App\Models\MatchmakerProfiles;
 use App\Models\MentorProfile;
 use App\Models\PromoCode;
 use App\Models\User;
+use App\Models\UserReferral;
+use App\Notifications\api\v1\FriendJoinedViaReferralNotification;
 use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -78,6 +81,21 @@ class UserController extends Controller
                 }
             }
 
+            $referrer = null;
+            if ($request->filled('referral_code')) {
+                $referrer = User::where('referral_code', strtoupper($request->referral_code))->first();
+            }
+//            else {
+//                // Auto-match referral by invited friend email if code was not typed
+//                $pendingInvite = UserReferral::where('friend_email', $request->email)
+//                    ->where('status', 'invited')
+//                    ->latest()
+//                    ->first();
+//                if ($pendingInvite) {
+//                    $referrer = User::find($pendingInvite->referrer_id);
+//                }
+//            }
+
             // Create User
             $user = User::create([
                 'f_name' => $request->f_name,
@@ -104,12 +122,37 @@ class UserController extends Controller
                 'linkedin_profile' => $request->linkedin_profile,
                 'emirate_id' => $emirateId,
                 'promo_code_id' => $promoCode?->id,
-                'subscription_plan' => $promoCode ? 'vip' : null,
+                'subscription_plan' => $promoCode ? 'vip' : 'free',
+                'referred_by_id' => $referrer?->id,
                 'is_approved' => false,
             ]);
 
             if ($promoCode) {
                 $promoCode->increment('uses_count');
+            }
+
+            if ($referrer) {
+                // Auto-create connection between referrer and newly registered friend
+                Connection::create([
+                    'requester_id' => $referrer->id,
+                    'requested_id' => $user->id,
+                    'status' => 'accepted',
+                ]);
+
+                // Update invitation tracking
+                UserReferral::where('referrer_id', $referrer->id)
+                    ->where('friend_email', $user->email)
+                    ->update([
+                        'status' => 'registered',
+                        'registered_user_id' => $user->id,
+                    ]);
+
+                // Notify referrer
+//                try {
+//                    $referrer->notify(new FriendJoinedViaReferralNotification($user));
+//                } catch (\Throwable $e) {
+//                    // Ignore notification delivery failure during registration
+//                }
             }
 
             return $this->forbidden(
@@ -196,6 +239,21 @@ class UserController extends Controller
         $request->user()->currentAccessToken()->delete();
         return $this->success( message: 'Logged out successfully');
     }
+
+    public function deleteUser(Request $request)
+    {
+        $user = $request->user();
+
+        // Optional: revoke all tokens for this user before deleting
+//        $user->tokens()->delete();
+
+        $user->delete();
+
+        return $this->success(message: 'Account deleted successfully');
+    }
+
+
+
 
     //getUserList
     public function getUserList(getUsersRequest $request)

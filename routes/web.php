@@ -38,6 +38,10 @@ Route::get('/support', function () {
     return view('support');
 });
 
+Route::get('/invite', function () {
+    return view('invite');
+});
+
 
 
 

@@ -12,6 +12,7 @@ use App\Http\Controllers\api\v1\EventController;
 use App\Http\Controllers\api\v1\MatchMakerChatController;
 use App\Http\Controllers\api\v1\MentorChatController;
 use App\Http\Controllers\api\v1\paymentController;
+use App\Http\Controllers\api\v1\ReferralController;
 use App\Http\Controllers\api\v1\ReportController;
 use App\Http\Controllers\api\v1\StripeController;
 use Illuminate\Http\Request;
@@ -45,6 +46,7 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
 
     Route::post('/switch-role', [UserController::class, 'switchRole']);
     Route::post('logout', [UserController::class, 'Logout']);
+    Route::post('delete', [UserController::class, 'deleteUser']);
     Route::get('/users', [UserController::class, 'getUserList']);
 
     Route::get('/user/status-by-role', [UserController::class, 'getUserStatusByRole']);
@@ -97,6 +99,12 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
         Route::post('/accept', [ConnectionController::class, 'accept']);
         Route::post('/reject', [ConnectionController::class, 'reject']);
         Route::post('/cancel', [ConnectionController::class, 'cancel']);
+    });
+
+
+    Route::prefix('referrals')->group(function() {
+        Route::get('/my-code', [ReferralController::class, 'getMyReferralInfo']);
+        Route::post('/send-invite', [ReferralController::class, 'sendFriendInvite']);
     });
 
 

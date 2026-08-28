@@ -39,6 +39,7 @@ class RegisterRequest extends FormRequest
 
             'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif',
             'promo_code' => 'nullable|string',
+            'referral_code' => 'nullable|string|exists:users,referral_code',
         ];
     }
 
